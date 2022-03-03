@@ -1,5 +1,57 @@
-const fichas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+const fichas = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 const tablero = [];
+const premios = {
+  0: {
+    3: 20,
+    4: 50,
+    5: 100,
+  },
+  1: {
+    3: 15,
+    4: 25,
+    5: 50,
+  },
+  2: {
+    3: 25,
+    4: 30,
+    5: 40,
+  },
+  3: {
+    3: 15,
+    4: 20,
+    5: 30,
+  },
+  4: {
+    3: 5,
+    4: 10,
+    5: 20,
+  },
+  5: {
+    3: 4,
+    4: 5,
+    5: 10,
+  },
+  6: {
+    3: 3,
+    4: 4,
+    5: 5,
+  },
+  7: {
+    3: 2,
+    4: 3,
+    5: 4,
+  },
+  8: {
+    3: 1,
+    4: 2,
+    5: 3,
+  },
+  9: {
+    3: 0,
+    4: 1,
+    5: 2,
+  },
+};
 const lineas = [
   [1, 1, 1, 1, 1],
   [0, 0, 0, 0, 0],
@@ -11,30 +63,28 @@ const lineas = [
   [2, 2, 1, 0, 0],
   [0, 0, 1, 2, 2],
 ];
+const probabilidad = 1;
 const randomNumber = () => {
-  let num = Math.floor(Math.random() * (100 - 0 + 1) + 0);
-  if (num < 10) {
-    return fichas[0];
-  } else if (num < 20) {
-    return fichas[1];
-  } else if (num < 30) {
-    return fichas[2];
-  } else if (num < 40) {
-    return fichas[3];
-  } else if (num < 50) {
-    return fichas[4];
-  } else if (num < 60) {
-    return fichas[5];
-  } else if (num < 70) {
-    return fichas[6];
-  } else if (num < 80) {
-    return fichas[7];
-  } else if (num < 90) {
-    return fichas[8];
-  } else if (num <= 100) {
+  let num = Math.floor(Math.random() * 10 + probabilidad);
+  if (num > 9) {
     return fichas[9];
+  } else {
+    if (num < 0) {
+      return fichas[0];
+    } else {
+      return fichas[num];
+    }
   }
 };
+const crearTablero = () => {
+  for (let i = 0; i < 3; i++) {
+    tablero[i] = new Array();
+    for (let j = 0; j < 5; j++) {
+      tablero[i][j] = randomNumber();
+    }
+  }
+};
+
 const juego = (linea) => {
   const logitudFilas = tablero[0].length;
   let cont = 0;
@@ -55,34 +105,64 @@ const juego = (linea) => {
     if (cont >= 3) {
       switch (fichaRepetida) {
         case fichas[0]:
-          return 10;
+          // console.log('A')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[0][cont];
           break;
         case fichas[1]:
-          return 9;
+          // console.log('B')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[1][cont];
           break;
         case fichas[2]:
-          return 8;
+          // console.log('C')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[2][cont];
           break;
         case fichas[3]:
-          return 7;
+          // console.log('D')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[3][cont];
           break;
         case fichas[4]:
-          return 6;
+          // console.log('E')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[4][cont];
           break;
         case fichas[5]:
-          return 5;
+          // console.log('F')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[5][cont];
           break;
         case fichas[6]:
-          return 4;
+          // console.log('G')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[6][cont];
           break;
         case fichas[7]:
-          return 3;
+          // console.log('H')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[7][cont];
           break;
         case fichas[8]:
-          return 2;
+          // console.log('I')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[8][cont];
           break;
         case fichas[9]:
-          return 1;
+          // console.log('J')
+          // console.log(linea);
+          // console.log(cont);
+          return premios[9][cont];
           break;
         default:
           return 0;
@@ -96,14 +176,6 @@ const juego = (linea) => {
   }
   /*Si el ciclo se termina y no hay ninguna linea devuelve un 0 haciendo alucion a que no se gano nada*/
   return 0;
-};
-const crearTablero = () => {
-  for (let i = 0; i < 3; i++) {
-    tablero[i] = new Array();
-    for (let j = 0; j < 5; j++) {
-      tablero[i][j] = randomNumber();
-    }
-  }
 };
 const apuesta = (cantidadDeLineas) => {
   /*A partir de la cantidad de lineas a apostar se hace un for con las lineas en cuestion.
@@ -119,36 +191,43 @@ const simularJuego = (cantidadDeLineas, cantidadApostada) => {
   /*En esta funcion como dice se simula el juego, 
   se ejecuta a partir de la catidad de lineas apostadas
   y el monto apostado*/
-  let acumuladoTotal = 0;
   /*Se crea el tablero */
   crearTablero();
   // tablero.forEach((e) => console.log(e));
   /*Se almacena el acumulado de ganancias*/
-  acumuladoTotal += apuesta(cantidadDeLineas);
+  let acumuladoTotal = apuesta(cantidadDeLineas);
   /*Si el acumulado es mayor a 0 es por que gano 
   entonces en la variable auxiliar 
   vecesQueGano se cuentan las veces gue gano*/
   if (acumuladoTotal > 0) {
     vecesQueGano++;
   }
+
   /*Se retorna el total acumulado multilicado por la catidad de lineas que se aposto*/
   return acumuladoTotal * cantidadApostada;
 };
 /*Aca se hace la simulacion para controlar la probabilidad */
 let ganancias = 0;
 let apuestasAcumuladas = 0;
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 10000000; i++) {
   /*Aca se pueden elegir la catidad de lineas a apostar de 1 a 9*/
   const lineasApostadas = 9;
   /*Aca ingresa el monto apostado */
-  const cantidadApostada = 100;
+  const cantidadApostada = 1;
+  const apuestaTotal = cantidadApostada * lineasApostadas;
   /*Se acumulan las ganacias de las partidas simuladas */
-  ganancias += simularJuego(lineasApostadas, cantidadApostada)
+  ganancias += simularJuego(lineasApostadas, cantidadApostada);
   /*Se acumulan los montos apostados */
-  apuestasAcumuladas += cantidadApostada;
+  apuestasAcumuladas += apuestaTotal;
 }
 /*Por ultimo, se pueden ver los resultados de la simulacion */
-console.log(`Total ganado: ${ganancias}`)
-console.log(`Total apostado: ${apuestasAcumuladas}`)
-console.log(`Veces que gano: ${vecesQueGano}`)
-console.log(`Diferencia: ${ganancias - apuestasAcumuladas}`)
+console.log(
+  `Total ganado: ${new Intl.NumberFormat("de-DE").format(ganancias)}`
+);
+console.log(
+  `Total apostado: ${new Intl.NumberFormat("de-DE").format(apuestasAcumuladas)}`
+);
+console.log(
+  `Veces que gano: ${new Intl.NumberFormat("de-DE").format(vecesQueGano)}`
+);
+console.log(`Diferencia: ${(100 / apuestasAcumuladas) * ganancias}`);
