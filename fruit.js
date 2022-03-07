@@ -219,3 +219,4 @@ console.log(
 console.log(`Diferencia: ${(100 / apuestasAcumuladas) * ganancias}`);
 
 /*-0.3, 4.1 */
+/*y=0.044*probabilidad-0,3 */
