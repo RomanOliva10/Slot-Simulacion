@@ -28,57 +28,57 @@ const premios = {
   },
   2: {
     3: 0,
-    4: 1,
-    5: 1,
+    4: 0,
+    5: 2,
   },
   3: {
     3: 0,
-    4: 1,
-    5: 2,
+    4: 0,
+    5: 3,
   },
   4: {
     3: 0,
     4: 1,
-    5: 3,
-  },
-  5: {
-    3: 0,
-    4: 2,
     5: 4,
   },
-  6: {
-    3: 0,
-    4: 0,
-    5: 0,
+  5: {
+    3: 1,
+    4: 2,
+    5: 5,
   },
-  7: {
-    3: 0,
+  6: {
+    3: 2,
     4: 3,
     5: 6,
   },
-  8: {
-    3: 0,
+  7: {
+    3: 3,
     4: 4,
+    5: 6,
+  },
+  8: {
+    3: 4,
+    4: 5,
     5: 7,
   },
   9: {
-    3: 0,
-    4: 5,
+    3: 5,
+    4: 6,
     5: 8,
   },
   10: {
-    3: 0,
-    4: 6,
+    3: 6,
+    4: 7,
     5: 9,
   },
   11: {
-    3: 5,
-    4: 7,
+    3: 7,
+    4: 8,
     5: 10,
   },
   12: {
-    3: 6,
-    4: 8,
+    3: 8,
+    4: 9,
     5: 11,
   },
 };
@@ -104,11 +104,16 @@ const lineas = [
   [1, 2, 1, 0, 1],
   [1, 0, 1, 2, 1],
 ];
-const probabilidad = -0.9;
+//--------------------------------
+const comodin = fichas[6];
+const bonus = fichas[0];
+const probabilidad = 0;
 let bonusCheck = false;
+let checkComodin = false;
+//--------------------------------
 const randomNumber = () => {
   const min = bonusCheck ? 1 : 0;
-  let num = Math.floor(Math.random() * (12 - min)-probabilidad) + min;
+  let num = Math.floor(Math.random() * (12 - min) - probabilidad) + min;
   if (num < min) {
     return fichas[min];
   } else {
@@ -128,16 +133,116 @@ const crearTablero = () => {
   }
 };
 const juego = (linea) => {
-  const logitudFilas = tablero[0].length;
-  const longitudColumnas = tablero.length;
-  const comodin = fichas[6];
-  const bonus = fichas[0];
-  let fichaComparadora = tablero[lineas[linea][0]][0];
+  const longitudFilas = tablero[0].length;
+  let fichaRepetida;
   let cont = 0;
+  for (let i = 0; i < longitudFilas; i++) {
+    for (let j = 0; j < longitudFilas; j++) {
+      // console.log(
+      //   [lineas[linea][i], j],
+      //   tablero[lineas[linea][i]][i],
+      //   tablero[lineas[linea][j]][j],
+      //   tablero[lineas[linea][i]][i] === tablero[lineas[linea][j]][j],
+      //   tablero[lineas[linea][j]][j] === comodin,
+      //   cont
+      // );
+      if (tablero[lineas[linea][i]][i] === tablero[lineas[linea][j]][j]) {
+        cont++;
+        fichaRepetida = tablero[lineas[linea][i]][i];
+      } else {
+        if (tablero[lineas[linea][j]][j] === comodin) {
+          cont++;
+          checkComodin = true;
+        } else {
+          if (
+            tablero[lineas[linea][i]][i] === comodin &&
+            tablero[lineas[linea][j]][j] !== comodin
+          ) {
+            cont++;
+            tablero[lineas[linea][i]][i] = tablero[lineas[linea][j]][j];
+            fichaRepetida = tablero[lineas[linea][j]][j];
+            checkComodin = true;
+          } else {
+            if (cont < 3) {
+              cont = 0;
+            }
+          }
+        }
+      }
+    }
+    if (cont >= 3) {
+      // console.log(fichaRepetida, linea, cont, checkComodin);
+      switch (fichaRepetida) {
+        case fichas[1]:
+          return checkComodin ? premios[1][cont] * 2 : premios[1][cont];
+          break;
+        case fichas[2]:
+          return checkComodin ? premios[2][cont] * 2 : premios[2][cont];
+          break;
+        case fichas[3]:
+          return checkComodin ? premios[3][cont] * 2 : premios[3][cont];
+          break;
+        case fichas[4]:
+          return checkComodin ? premios[5][cont] * 2 : premios[5][cont];
+          break;
+        case fichas[5]:
+          return checkComodin ? premios[5][cont] * 2 : premios[5][cont];
+          break;
+        case fichas[6]:
+          return premios[6][cont] * 2;
+          break;
+        case fichas[7]:
+          return checkComodin ? premios[7][cont] * 2 : premios[7][cont];
+          break;
+        case fichas[8]:
+          return checkComodin ? premios[8][cont] * 2 : premios[8][cont];
+          break;
+        case fichas[9]:
+          return checkComodin ? premios[9][cont] * 2 : premios[9][cont];
+          break;
+        case fichas[10]:
+          return checkComodin ? premios[10][cont] * 2 : premios[10][cont];
+          break;
+        case fichas[11]:
+          return checkComodin ? premios[11][cont] * 2 : premios[11][cont];
+          break;
+        case fichas[12]:
+          return checkComodin ? premios[12][cont] * 2 : premios[12][cont];
+          break;
+        default:
+          return 0;
+          break;
+      }
+    } else {
+      cont = 0;
+    }
+  }
+  return 0;
+};
+
+// // crearTablero();
+// tablero.forEach((e) => console.log(e));
+// console.log(juego(1));
+// if (bonusCheck) {
+//   // contadorBonus++;
+//   for (let i = 0; i < 15; i++) {
+//     crearTablero();
+//     console.log("===================");
+//     tablero.forEach((e) => console.log(e));
+//     console.log(juego(0));
+//     // tiradaBonus += apuesta(cantidadDeLineas);
+//   }
+//   bonusCheck = false;
+// }
+
+const apuesta = (cantidadDeLineas) => {
+  let acumulado = 0;
   let bonusPlus = 0;
-  let checkComodin = false;
+  let cont = 0;
+  const longitudFilas = tablero[0].length;
+  const longitudColumnas = tablero.length;
   for (let i = 0; i < longitudColumnas; i++) {
-    for (let j = 0; j < logitudFilas; j++) {
+    for (let j = 0; j < longitudFilas; j++) {
       if (tablero[i][j] === bonus) {
         cont++;
       }
@@ -156,124 +261,10 @@ const juego = (linea) => {
       }
     }
   }
-  cont = 0;
-  for (let i = 0; i < logitudFilas; i++) {
-    // console.log(
-    //   [lineas[linea][i], i],
-    //   fichaComparadora,
-    //   tablero[lineas[linea][i]][i],
-    //   fichaComparadora === tablero[lineas[linea][i]][i]
-    // );
-    if (fichaComparadora === tablero[lineas[linea][i]][i]) {
-      cont++;
-    } else {
-      if (tablero[lineas[linea][i]][i] === comodin) {
-        cont++;
-        checkComodin = true;
-      } else {
-        if (
-          fichaComparadora === comodin &&
-          tablero[lineas[linea][i]][i] !== comodin
-        ) {
-          checkComodin = true;
-          cont++;
-          fichaComparadora = tablero[lineas[linea][i]][i];
-        } else {
-          break;
-        }
-      }
-    }
-  }
-  if (cont >= 3) {
-    // console.log(fichaComparadora, linea, cont, checkComodin);
-    switch (fichaComparadora) {
-      case fichas[1]:
-        return (
-          (checkComodin ? premios[1][cont] * 2 : premios[1][cont]) + bonusPlus
-        );
-        break;
-      case fichas[2]:
-        return (
-          (checkComodin ? premios[2][cont] * 2 : premios[2][cont]) + bonusPlus
-        );
-        break;
-      case fichas[3]:
-        return (
-          (checkComodin ? premios[3][cont] * 2 : premios[4][cont]) + bonusPlus
-        );
-        break;
-      case fichas[4]:
-        return (
-          (checkComodin ? premios[5][cont] * 2 : premios[5][cont]) + bonusPlus
-        );
-        break;
-      case fichas[5]:
-        return (
-          (checkComodin ? premios[5][cont] * 2 : premios[5][cont]) + bonusPlus
-        );
-        break;
-      case fichas[6]:
-        return premios[6][cont] * 2 + bonusPlus;
-        break;
-      case fichas[7]:
-        return (
-          (checkComodin ? premios[7][cont] * 2 : premios[7][cont]) + bonusPlus
-        );
-        break;
-      case fichas[8]:
-        return (
-          (checkComodin ? premios[8][cont] * 2 : premios[8][cont]) + bonusPlus
-        );
-        break;
-      case fichas[9]:
-        return (
-          (checkComodin ? premios[9][cont] * 2 : premios[9][cont]) + bonusPlus
-        );
-        break;
-      case fichas[10]:
-        return (
-          (checkComodin ? premios[10][cont] * 2 : premios[10][cont]) + bonusPlus
-        );
-        break;
-      case fichas[11]:
-        return (
-          (checkComodin ? premios[11][cont] * 2 : premios[11][cont]) + bonusPlus
-        );
-        break;
-      case fichas[12]:
-        return (
-          (checkComodin ? premios[12][cont] * 2 : premios[12][cont]) + bonusPlus
-        );
-        break;
-      default:
-        return 0;
-        break;
-    }
-  }
-  return 0 + bonusPlus;
-};
-
-// crearTablero();
-// tablero.forEach((e) => console.log(e));
-// console.log(juego(1));
-// if (bonusCheck) {
-//   // contadorBonus++;
-//   for (let i = 0; i < 15; i++) {
-//     crearTablero();
-//     console.log("===================");
-//     tablero.forEach((e) => console.log(e));
-//     console.log(juego(0));
-//     // tiradaBonus += apuesta(cantidadDeLineas);
-//   }
-//   bonusCheck = false;
-// }
-
-const apuesta = (cantidadDeLineas) => {
-  let acumulado = 0;
   for (let i = 0; i < cantidadDeLineas; i++) {
     acumulado += juego(i);
   }
-  return acumulado;
+  return acumulado + bonusPlus;
 };
 let vecesQueGano = 0;
 let contadorBonus = 0;
@@ -321,4 +312,4 @@ console.log(
   )}`
 );
 console.log(`Diferencia: ${(100 / apuestasAcumuladas) * ganancias}`);
-/*0.2, -0,9 */
+/*-1 ,0.2*/
