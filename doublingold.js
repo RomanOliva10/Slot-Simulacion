@@ -51,44 +51,47 @@ const lineas = [
   [1, 2, 1],
   [2, 1, 0],
 ];
-// const tipos = {
-//   'AAA': "A",
-//   'BBB': "B",
-// };
-// const colores = {
-//   'GRGO': "M",
-//   'GGG': "G",
-//   'RRR': "R",
-//   'GOGOGO': "GO",
-// };
-// const premios = {
-//   "AM": 200,
-//   "AG": 150,
-//   "AR": 125,
-//   "AGO": 100,
-//   "Aundefined": 75,
-//   "BM": 50,
-//   "BGO": 30,
-//   "BR": 20,
-//   "undefinedM": 15,
-//   "BG": 10,
-//   "Bundefined": 5,
-//   "undefinedG": 3,
-//   "undefinedR": 2,
-//   "undefinedGO": 1
-// };
+const tipos = {
+  AAA: "A",
+  BBB: "B",
+};
+const colores = {
+  GRGO: "M",
+  GGG: "G",
+  RRR: "R",
+  GOGOGO: "GO",
+};
+const premios = {
+  AM: 2,
+  AG: 1.9,
+  AR: 1.8,
+  AGO: 1.7,
+  Aundefined: 1.6,
+  BM: 1.5,
+  BGO: 1.4,
+  BR: 1.3,
+  BG: 1.2,
+  Bundefined: 1.1,
+  undefinedM: 1,
+  undefinedG: 0.9,
+  undefinedR: 0.5,
+  undefinedGO: 0.4,
+};
 const bonus = fichas[6];
-const probabilidad = 0;
+const probabilidad = 0.8;
 let bonusCheck = false;
 const randomNumber = () => {
-  const max = bonusCheck ? 5 : 6;
-  let num = Math.floor(Math.random() * max - probabilidad);
+  const max = bonusCheck ? 6 : 7;
+  let num = Math.floor(Math.random() * (max - 0) - probabilidad) + 0;
   if (num < 0) {
     return fichas[0];
   } else {
-    if (num > max) {
-      return fichas[max];
+    if (num > 6 && !bonusCheck) {
+      return fichas[6];
     } else {
+      if (num >= 6 && bonusCheck) {
+        return fichas[5];
+      }
       return fichas[num];
     }
   }
@@ -101,18 +104,88 @@ const crearTablero = () => {
     }
   }
 };
-
 const juego = (linea) => {
   const logitudFilas = tablero[0].length;
-  let cont = 0;
-  let color
+  let checkColor = [];
+  let checkTipo = [];
   for (let i = 0; i < logitudFilas; i++) {
-    color=+tablero[lineas[linea][i]][i].color;
+    checkColor.push(tablero[lineas[linea][i]][i].color);
+    checkTipo.push(tablero[lineas[linea][i]][i].type);
   }
-  console.log(color)
-  //   return 0;
+  const color = colores[checkColor.join("")];
+  const tipo = tipos[checkTipo.join("")];
+  if (color || tipo) {
+    return premios[tipo + color];
+  } else {
+    return 0;
+  }
 };
+const apuesta = (cantidadDeLineas) => {
+  let acumulado = 0;
+  let cont = 0;
+  const logitudFilas = tablero[0].length;
+  const longitudColumnas = tablero.length;
+  for (let i = 0; i < longitudColumnas; i++) {
+    for (let j = 0; j < logitudFilas; j++) {
+      if (tablero[i][j] === bonus) {
+        cont++;
+      }
+    }
+  }
+  if (cont >= 3) {
+    bonusCheck = true;
+  }
+  for (let i = 0; i < cantidadDeLineas; i++) {
+    acumulado += juego(i);
+  }
+  return acumulado;
+};
+let vecesQueGano = 0;
+let contadorBonus = 0;
+const simularJuego = (cantidadDeLineas, cantidadApostada) => {
+  crearTablero();
+  // console.log("******************");
+  // tablero.forEach((e) => console.log(JSON.stringify(e)));
+  let tiradaBonus = 0;
+  let acumuladoTotal = apuesta(cantidadDeLineas);
+  if (acumuladoTotal > 0) {
+    vecesQueGano++;
+  }
+  if (bonusCheck) {
+    contadorBonus++;
+    for (let i = 0; i < 10; i++) {
+      crearTablero();
+      // console.log("===================");
+      // tablero.forEach((e) => console.log(JSON.stringify(e)));
+      tiradaBonus += apuesta(cantidadDeLineas);
+    }
+    bonusCheck = false;
+  }
+  return (acumuladoTotal + tiradaBonus) * cantidadApostada;
+};
+let ganancias = 0;
+let apuestasAcumuladas = 0;
+for (let i = 0; i < 1000000; i++) {
+  const lineasApostadas = 10;
+  const cantidadApostada = 1;
+  const apuestaTotal = cantidadApostada * lineasApostadas;
+  ganancias += simularJuego(lineasApostadas, cantidadApostada);
+  apuestasAcumuladas += apuestaTotal;
+}
+console.log(
+  `Total ganado: ${new Intl.NumberFormat("de-DE").format(ganancias)}`
+);
+console.log(
+  `Total apostado: ${new Intl.NumberFormat("de-DE").format(apuestasAcumuladas)}`
+);
+console.log(
+  `Veces que gano: ${new Intl.NumberFormat("de-DE").format(vecesQueGano)}`
+);
+console.log(
+  `Veces que hubo bonus: ${new Intl.NumberFormat("de-DE").format(
+    contadorBonus
+  )}`
+);
+console.log(`Diferencia: ${(100 / apuestasAcumuladas) * ganancias}`);
 
-crearTablero();
-tablero.forEach((e) => console.log(JSON.stringify(e)));
-juego(0);
+/*-0,2 ,0.8*/
