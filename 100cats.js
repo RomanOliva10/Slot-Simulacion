@@ -2,54 +2,54 @@ const fichas = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 const tablero = [];
 const premios = {
   0: {
-    3: 1,
-    4: 3,
-    5: 14,
+    3: 0,
+    4: 0,
+    5: 1,
   },
   1: {
-    3: 2,
-    4: 4,
-    5: 15,
+    3: 0,
+    4: 0,
+    5: 1,
   },
   2: {
-    3: 3,
-    4: 6,
-    5: 16,
+    3: 0,
+    4: 0,
+    5: 1,
   },
   3: {
-    3: 4,
-    4: 7,
-    5: 17,
+    3: 0,
+    4: 1,
+    5: 1,
   },
   4: {
-    3: 5,
-    4: 8,
-    5: 18,
+    3: 0,
+    4: 1,
+    5: 2,
   },
   5: {
-    3: 6,
-    4: 9,
-    5: 19,
+    3: 1,
+    4: 2,
+    5: 3,
   },
   6: {
-    3: 7,
-    4: 10,
-    5: 25,
+    3: 2,
+    4: 3,
+    5: 4,
   },
   7: {
-    3: 8,
-    4: 15,
-    5: 30,
+    3: 3,
+    4: 4,
+    5: 5,
   },
   8: {
-    3: 9,
-    4: 20,
-    5: 40,
+    3: 4,
+    4: 5,
+    5: 6,
   },
   9: {
-    3: 10,
-    4: 30,
-    5: 50,
+    3: 5,
+    4: 6,
+    5: 7,
   },
   10: {
     3: 0,
@@ -57,10 +57,10 @@ const premios = {
     5: 100,
   },
   11: {
-    2: 5,
+    2: 9,
     3: 10,
     4: 11,
-    5: 15,
+    5: 12,
   },
 };
 const lineas = [
@@ -88,19 +88,22 @@ const lineas = [
 //************************/
 const comodin = fichas[10];
 const bonus = fichas[11];
-const probabilidad = 0;
+const probabilidad = -0.1;
 let bonusCheck = false;
 let checkComodin = false;
 //************************/
 const randomNumber = () => {
-  const max = bonusCheck ? 10 : 11;
+  const max = bonusCheck ? 11 : 12;
   let num = Math.floor(Math.random() * max - probabilidad);
   if (num < 0) {
     return fichas[0];
   } else {
-    if (num > max) {
-      return fichas[max];
+    if (num > 11 && !bonusCheck) {
+      return fichas[11];
     } else {
+      if (num >= 11 && bonusCheck) {
+        return fichas[10];
+      }
       return fichas[num];
     }
   }
@@ -114,40 +117,43 @@ const crearTablero = () => {
   }
 };
 const juego = (linea) => {
-  const logitudFilas = tablero[0].length;
+  const longitudFilas = tablero[0].length;
   let fichaRepetida;
   let cont = 0;
-  for (let i = 0; i < logitudFilas; i++) {
-    for (let j = 0; j < logitudFilas; j++) {
+  for (let i = 0; i < longitudFilas; i++) {
+    // console.log("===================");
+    let comparador = tablero[lineas[linea][i]][i];
+    for (let j = 0; j < longitudFilas; j++) {
+      let comparado = tablero[lineas[linea][j]][j];
       // console.log(
-      //   [lineas[linea][i], j],
-      //   tablero[lineas[linea][i]][i],
-      //   tablero[lineas[linea][j]][j],
-      //   tablero[lineas[linea][i]][i] === tablero[lineas[linea][j]][j],
-      //   tablero[lineas[linea][j]][j] === comodin,
-      //   tablero[lineas[linea][i]][i] === comodin &&
-      //     tablero[lineas[linea][j]][j] !== comodin,
-      //   cont
+      //   [lineas[linea][j], j],
+      //   comparador,
+      //   comparado,
+      //   comparador === comparado,
+      //   comparado === comodin,
+      //   comparador === comodin && comparado !== comodin,
+      //   comparador,
+      //   cont,
+      //   cont < 3
       // );
-      if (tablero[lineas[linea][i]][i] === tablero[lineas[linea][j]][j]) {
+      if (comparador === comparado) {
         cont++;
-        fichaRepetida = tablero[lineas[linea][j]][j];
+        fichaRepetida = comparador;
       } else {
-        if (tablero[lineas[linea][j]][j] === comodin) {
+        if (comparado === comodin) {
           checkComodin = true;
           cont++;
         } else {
-          if (
-            tablero[lineas[linea][i]][i] === comodin &&
-            tablero[lineas[linea][j]][j] !== comodin
-          ) {
+          if (comparador === comodin && comparado !== comodin) {
             cont++;
-            tablero[lineas[linea][i]][i] = tablero[lineas[linea][j]][j];
-            fichaRepetida = tablero[lineas[linea][j]][j];
+            comparador = comparado;
+            fichaRepetida = comparado;
             checkComodin = true;
           } else {
             if (cont < 3) {
               cont = 0;
+            } else {
+              break;
             }
           }
         }
@@ -196,7 +202,7 @@ const juego = (linea) => {
           return 0;
           break;
       }
-    }else{
+    } else {
       cont = 0;
     }
   }
@@ -206,10 +212,10 @@ const apuesta = (cantidadDeLineas) => {
   let acumulado = 0;
   let bonusPlus = 0;
   let cont = 0;
-  const logitudFilas = tablero[0].length;
+  const longitudFilas = tablero[0].length;
   const longitudColumnas = tablero.length;
   for (let i = 0; i < longitudColumnas; i++) {
-    for (let j = 0; j < logitudFilas; j++) {
+    for (let j = 0; j < longitudFilas; j++) {
       if (tablero[i][j] === bonus) {
         cont++;
       }
@@ -222,7 +228,8 @@ const apuesta = (cantidadDeLineas) => {
     if (cont === 2) {
       bonusPlus = premios[11][2];
     } else {
-      if (cont > 2) {
+      if (cont > 3) {
+        bonusCheck = true;
         bonusPlus = premios[11][cont];
       }
     }
@@ -251,9 +258,6 @@ const simularJuego = (cantidadDeLineas, cantidadApostada) => {
       // console.log("===================");
       // tablero.forEach((e) => console.log(e));
       tiradaBonus += apuesta(cantidadDeLineas);
-      if (tiradaBonus === NaN) {
-        console.log("aca");
-      }
     }
     bonusCheck = false;
   }
@@ -284,4 +288,4 @@ console.log(
 );
 console.log(`Diferencia: ${(100 / apuestasAcumuladas) * ganancias}`);
 
-/*0.9 ,1*/
+/*-0.2 ,2*/
