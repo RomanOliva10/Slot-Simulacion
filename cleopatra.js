@@ -16,76 +16,76 @@ const fichas = [
 const tablero = [];
 const premios = {
   0: {
-    2: 1,
-    3: 2,
-    4: 3,
-    5: 4,
+    2: 0.1,
+    3: 0.2,
+    4: 0.3,
+    5: 0.4,
   },
   1: {
     3: 0,
     4: 0,
-    5: 1,
+    5: 0.1,
   },
   2: {
+    3: 0.1,
+    4: 0.2,
+    5: 0.3,
+  },
+  3: {
+    3: 0.4,
+    4: 0.5,
+    5: 0.6,
+  },
+  4: {
+    3: 0.7,
+    4: 0.8,
+    5: 0.9,
+  },
+  5: {
+    3: 1,
+    4: 1.1,
+    5: 1.2,
+  },
+  6: {
     3: 0,
     4: 0,
     5: 2,
   },
-  3: {
-    3: 0,
-    4: 0,
-    5: 3,
-  },
-  4: {
-    3: 0,
-    4: 1,
-    5: 4,
-  },
-  5: {
-    3: 1,
-    4: 2,
-    5: 5,
-  },
-  6: {
-    3: 2,
-    4: 3,
-    5: 6,
-  },
   7: {
-    3: 3,
-    4: 4,
-    5: 6,
+    3: 1.3,
+    4: 1.4,
+    5: 1.5,
   },
   8: {
-    3: 4,
-    4: 5,
-    5: 7,
+    3: 1.6,
+    4: 1.7,
+    5: 1.8,
   },
   9: {
-    3: 5,
-    4: 6,
-    5: 8,
+    3: 1.9,
+    4: 2,
+    5: 2.1,
   },
   10: {
-    3: 6,
-    4: 7,
-    5: 9,
+    3: 2.2,
+    4: 2.3,
+    5: 2.4,
   },
   11: {
-    3: 7,
-    4: 8,
-    5: 10,
+    3: 2.5,
+    4: 2.6,
+    5: 2.7,
   },
   12: {
-    3: 8,
-    4: 9,
-    5: 11,
+    3: 2.8,
+    4: 2.9,
+    5: 3,
   },
 };
 const lineas = [
+  [2, 2, 2, 2, 2],
   [1, 1, 1, 1, 1],
   [0, 0, 0, 0, 0],
-  [2, 2, 2, 2, 2],
   [1, 0, 0, 0, 1],
   [1, 2, 2, 2, 1],
   [2, 1, 0, 1, 2],
@@ -137,34 +137,39 @@ const juego = (linea) => {
   let fichaRepetida;
   let cont = 0;
   for (let i = 0; i < longitudFilas; i++) {
+    // console.log("===================");
+    let comparador = tablero[lineas[linea][i]][i];
     for (let j = 0; j < longitudFilas; j++) {
+      let comparado = tablero[lineas[linea][j]][j];
       // console.log(
-      //   [lineas[linea][i], j],
-      //   tablero[lineas[linea][i]][i],
-      //   tablero[lineas[linea][j]][j],
-      //   tablero[lineas[linea][i]][i] === tablero[lineas[linea][j]][j],
-      //   tablero[lineas[linea][j]][j] === comodin,
-      //   cont
+      //   [lineas[linea][j], j],
+      //   comparador,
+      //   comparado,
+      //   comparador === comparado,
+      //   comparado === comodin,
+      //   comparador === comodin && comparado !== comodin,
+      //   comparador,
+      //   cont,
+      //   cont < 3
       // );
-      if (tablero[lineas[linea][i]][i] === tablero[lineas[linea][j]][j]) {
+      if (comparador === comparado) {
         cont++;
-        fichaRepetida = tablero[lineas[linea][i]][i];
+        fichaRepetida = comparador;
       } else {
-        if (tablero[lineas[linea][j]][j] === comodin) {
-          cont++;
+        if (comparado === comodin) {
           checkComodin = true;
+          cont++;
         } else {
-          if (
-            tablero[lineas[linea][i]][i] === comodin &&
-            tablero[lineas[linea][j]][j] !== comodin
-          ) {
+          if (comparador === comodin && comparado !== comodin) {
             cont++;
-            tablero[lineas[linea][i]][i] = tablero[lineas[linea][j]][j];
-            fichaRepetida = tablero[lineas[linea][j]][j];
+            comparador = comparado;
+            fichaRepetida = comparado;
             checkComodin = true;
           } else {
             if (cont < 3) {
               cont = 0;
+            } else {
+              break;
             }
           }
         }
